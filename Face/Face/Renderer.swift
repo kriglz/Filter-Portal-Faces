@@ -99,7 +99,7 @@ class Renderer {
             return nil
         }
         geometry.firstMaterial?.isDoubleSided = true
-        geometry.firstMaterial!.fillMode = .lines
+        geometry.firstMaterial!.fillMode = .fill
         let node = SCNNode(geometry: geometry)
         node.name = "FaceNode"
         return node
@@ -479,6 +479,7 @@ class Renderer {
         // Grab the transform and rotate it by -90 degrees
         var arCameraTransform = frame.camera.transform
         arCameraTransform = arCameraTransform.rotatedBy(rotationAngle: -1.5708, x: 0, y: 0, z: 1)
+        arCameraTransform = arCameraTransform.scaledBy(x: 1, y: 1, z: -1)
         scnRenderer.pointOfView?.simdTransform = arCameraTransform
         
         // Update field of view too, to make the best experience
