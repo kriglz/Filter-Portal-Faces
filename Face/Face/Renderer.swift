@@ -163,17 +163,18 @@ class Renderer {
             updateBufferStates()
             updateGameState()
             
-            if let renderPassDescriptor = renderDestination.currentRenderPassDescriptor, let currentDrawable = renderDestination.currentDrawable, let renderEncoder = commandBuffer.makeRenderCommandEncoder(descriptor: renderPassDescriptor) {
+            if let renderPassDescriptor = renderDestination.currentRenderPassDescriptor, let currentDrawable = renderDestination.currentDrawable {
                 
+                let renderEncoder = commandBuffer.makeRenderCommandEncoder(descriptor: renderPassDescriptor)!
                 renderEncoder.label = "MyRenderEncoder"
                 
                 drawCapturedImage(renderEncoder: renderEncoder)
-                drawAnchorGeometry(renderEncoder: renderEncoder)
+//                drawAnchorGeometry(renderEncoder: renderEncoder)
                 
                 // We're done encoding commands
                 renderEncoder.endEncoding()
                 
-//                drawScene(commandBuffer: commandBuffer, passDescriptor: renderPassDescriptor)
+                drawScene(commandBuffer: commandBuffer, passDescriptor: renderPassDescriptor)
                                 
                 // Schedule a present once the framebuffer is complete using the current drawable
                 commandBuffer.present(currentDrawable)
@@ -588,10 +589,14 @@ class Renderer {
         // Push a debug group allowing us to identify render commands in the GPU Frame Capture tool
         commandBuffer.pushDebugGroup("DrawScene")
         
+        let scenePassDescriptor = passDescriptor
+        scenePassDescriptor.colorAttachments[0].loadAction = .load
+        scenePassDescriptor.colorAttachments[0].texture = renderDestination.currentDrawable?.texture
+        
         scnRenderer.render(atTime: renderTime,
                            viewport: CGRect(origin: .zero, size: viewportSize),
                            commandBuffer: commandBuffer,
-                           passDescriptor: passDescriptor)
+                           passDescriptor: scenePassDescriptor)
         
         commandBuffer.popDebugGroup()
     }
