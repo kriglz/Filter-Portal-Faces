@@ -472,7 +472,10 @@ class Renderer {
     }
     
     func updateFaceAnchor(frame: ARFrame) {
-                
+           
+        SCNTransaction.begin()
+        SCNTransaction.disableActions = true
+        
         // Grab the transform and rotate it by -90 degrees
         var arCameraTransform = frame.camera.transform
         arCameraTransform = arCameraTransform.rotatedBy(rotationAngle: -1.5708, x: 0, y: 0, z: 1)
@@ -490,8 +493,11 @@ class Renderer {
             faceNode.simdTransform = face.transform
             (faceNode.geometry as? ARSCNFaceGeometry)?.update(from: face.geometry)
             
-            faceNode.position.z = -0.3
+            let translation = arCameraTransform.translatedBy(x: 0, y: 0, z: -0.5).columns.3
+            faceNode.position = SCNVector3(translation.x, translation.y, translation.z)
         }
+        
+        SCNTransaction.commit()
     }
     
     func createTexture(fromPixelBuffer pixelBuffer: CVPixelBuffer, pixelFormat: MTLPixelFormat, planeIndex: Int) -> CVMetalTexture? {
