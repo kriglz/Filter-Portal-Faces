@@ -169,7 +169,7 @@ class Renderer {
                 renderEncoder.label = "MyRenderEncoder"
                 
                 drawCapturedImage(renderEncoder: renderEncoder)
-//                drawAnchorGeometry(renderEncoder: renderEncoder)
+                drawAnchorGeometry(renderEncoder: renderEncoder)
                 
                 // We're done encoding commands
                 renderEncoder.endEncoding()
@@ -413,8 +413,8 @@ class Renderer {
         
         let uniforms = sharedUniformBufferAddress.assumingMemoryBound(to: SharedUniforms.self)
         
-        uniforms.pointee.viewMatrix = frame.camera.viewMatrix(for: .landscapeRight)
-        uniforms.pointee.projectionMatrix = frame.camera.projectionMatrix(for: .landscapeRight, viewportSize: viewportSize, zNear: 0.001, zFar: 1000)
+        uniforms.pointee.viewMatrix = frame.camera.viewMatrix(for: .portrait)
+        uniforms.pointee.projectionMatrix = frame.camera.projectionMatrix(for: .portrait, viewportSize: viewportSize, zNear: 0.001, zFar: 1000)
 
         // Set up lighting for the scene using the ambient intensity if provided
         var ambientIntensity: Float = 1.0
