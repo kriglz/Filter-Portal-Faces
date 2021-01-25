@@ -100,6 +100,7 @@ class Renderer {
         }
         geometry.firstMaterial?.isDoubleSided = true
         geometry.firstMaterial!.fillMode = .fill
+        geometry.firstMaterial?.lightingModel = .physicallyBased
         let node = SCNNode(geometry: geometry)
         node.name = "FaceNode"
         return node
