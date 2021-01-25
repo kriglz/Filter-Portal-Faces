@@ -20,6 +20,8 @@ class CameraViewController: UIViewController, MTKViewDelegate, ARSessionDelegate
     var session: ARSession!
     var renderer: Renderer!
     
+    private let mtkBoxView = UIView()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -61,6 +63,9 @@ class CameraViewController: UIViewController, MTKViewDelegate, ARSessionDelegate
         mtkView.contentMode = .scaleAspectFill
         mtkView.clipsToBounds = true
         
+        mtkBoxView.layer.masksToBounds = true
+        mtkBoxView.layer.cornerRadius = 8
+
         guard mtkView.device != nil else {
             print("Metal is not supported on this device")
             return
@@ -76,12 +81,21 @@ class CameraViewController: UIViewController, MTKViewDelegate, ARSessionDelegate
         
         // Layout
         
-        view.addSubview(mtkView)
+        mtkBoxView.addSubview(mtkView)
+        view.addSubview(mtkBoxView)
+        
+        mtkBoxView.translatesAutoresizingMaskIntoConstraints = false
         mtkView.translatesAutoresizingMaskIntoConstraints = false
-        mtkView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
-        mtkView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
-        mtkView.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
-        mtkView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
+        
+        mtkBoxView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
+        mtkBoxView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
+        mtkBoxView.heightAnchor.constraint(equalTo: mtkBoxView.widthAnchor, multiplier: 16.0 / 9).isActive = true
+        mtkBoxView.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
+        
+        mtkView.leadingAnchor.constraint(equalTo: mtkBoxView.leadingAnchor).isActive = true
+        mtkView.trailingAnchor.constraint(equalTo: mtkBoxView.trailingAnchor).isActive = true
+        mtkView.topAnchor.constraint(equalTo: mtkBoxView.topAnchor).isActive = true
+        mtkView.bottomAnchor.constraint(equalTo: mtkBoxView.bottomAnchor).isActive = true
 
         // Gestures
         
