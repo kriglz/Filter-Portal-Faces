@@ -15,7 +15,7 @@ extension MTKView : RenderDestinationProvider {
 
 class CameraViewController: UIViewController, MTKViewDelegate, ARSessionDelegate {
     
-    let configuration = ARWorldTrackingConfiguration()
+    var configuration: ARConfiguration!
     var mtkView: MTKView!
     var session: ARSession!
     var renderer: Renderer!
@@ -24,17 +24,26 @@ class CameraViewController: UIViewController, MTKViewDelegate, ARSessionDelegate
         super.viewDidLoad()
         
         // Create a session configuration
-        configuration.planeDetection = [.horizontal, .vertical]
+        let worldTrackingConfiguration = ARWorldTrackingConfiguration()
+        worldTrackingConfiguration.planeDetection = [.horizontal, .vertical]
         if ARWorldTrackingConfiguration.supportsUserFaceTracking {
-            configuration.userFaceTrackingEnabled = true
+            worldTrackingConfiguration.userFaceTrackingEnabled = true
         }
         if ARWorldTrackingConfiguration.supportsFrameSemantics(.personSegmentation) {
-            configuration.frameSemantics = .personSegmentation
+            worldTrackingConfiguration.frameSemantics = .personSegmentation
         }
+        let videoFormats720 = ARWorldTrackingConfiguration.supportedVideoFormats.filter({ $0.imageResolution.height == 720})
+        if let videoFormat = videoFormats720.first(where: { $0.framesPerSecond == 30 }) ?? videoFormats720.first {
+            worldTrackingConfiguration.videoFormat = videoFormat
+        }
+        configuration = worldTrackingConfiguration
+        
+//        let faceTrackingConfiguration = ARFaceTrackingConfiguration()
 //        let videoFormats720 = ARFaceTrackingConfiguration.supportedVideoFormats.filter({ $0.imageResolution.height == 720})
 //        if let videoFormat = videoFormats720.first(where: { $0.framesPerSecond == 30 }) ?? videoFormats720.first {
-//            configuration.videoFormat = videoFormat
+//            faceTrackingConfiguration.videoFormat = videoFormat
 //        }
+//        configuration = faceTrackingConfiguration
         
         // Set the view's delegate
         session = ARSession()
@@ -90,9 +99,11 @@ class CameraViewController: UIViewController, MTKViewDelegate, ARSessionDelegate
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
-//        mtkView.superview?.layoutIfNeeded()
-//        mtkView.drawableSize = view.bounds.size
-//            .applying(CGAffineTransform(scaleX: UIScreen.main.nativeScale, y: UIScreen.main.nativeScale))
+        let ratio = UIScreen.main.nativeBounds.width / 720.0
+        let size = CGSize(width: 720 * ratio, height: 1280 * ratio)
+
+        mtkView.superview?.layoutIfNeeded()
+        mtkView.drawableSize = size
     }
     
     override func viewWillDisappear(_ animated: Bool) {
